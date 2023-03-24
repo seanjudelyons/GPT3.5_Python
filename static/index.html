@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT-3.5 Turbo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 500px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #output {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            min-height: 50px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>GPT-3.5 Turbo</h1>
+        <form id="question-form">
+            <input type="text" id="question-input" placeholder="Ask your question here...">
+            <button type="submit">Submit</button>
+        </form>
+        <div id="output">Your answer will appear here...</div>
+    </div>
+
+    <script>
+        async function sendQuestion(question) {
+            const response = await fetch("/ask", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ text: question })
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch answer");
+            }
+
+            const data = await response.json();
+            return data.Answer;
+        }
+
+        document.getElementById("question-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const questionInput = document.getElementById("question-input");
+            const output = document.getElementById("output");
+
+            if (questionInput.value.trim() === "") {
+                alert("Please enter a question.");
+                return;
+            }
+
+            try {
+                const answer = await sendQuestion(questionInput.value);
+                output.textContent = answer;
+            } catch (error) {
+                console.error(error);
+                output.textContent = "An error occurred. Please try again.";
+            }
+        });
+    </script>
+</body>
+
+</html>
